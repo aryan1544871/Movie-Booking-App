@@ -10,7 +10,7 @@ export const getNowPlayingMovies = async(req, res) =>{
             headers: {Authorization: `Bearer ${process.env.TMDB_API_KEY}`}
         });
 
-        const movies = data.results;
+        const movies = data.results.filter(movie => movie.original_language === "hi");
         res.json({success: true, movies: movies});
     } catch (error) {
         console.error(error);
