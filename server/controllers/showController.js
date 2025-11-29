@@ -9,14 +9,18 @@ export const getNowPlayingMovies = async(req, res) =>{
         const now = new Date();
         const dateAfter14days = new Date(now.getTime() + 14*24*60*60*1000);
         const dateBefore14days = new Date(now.getTime() - 14*24*60*60*1000);
-        const {data} = await axios.get(`https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&primary_release_date.gte=${dateBefore14days.toISOString().split('T')[0]}&primary_release_date.lte=${dateAfter14days.toISOString().split('T')[0]}&sort_by=primary_release_date.asc&with_original_language=hi`, {
-            headers: {Authorization: `Bearer ${process.env.TMDB_API_KEY}`}
-        });
-
-        const movies = data.results;
-        if (movies.length === 0) {
-
+        const movie_start_date = process.env.MOVIE_START_DATE;
+        const movie_end_date = process.env.MOVIE_END_DATE;
+        if (movie_start_date && movie_end_date) {
+            const {data} = await axios.get(`https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&primary_release_date.gte=${movie_start_date}&primary_release_date.lte=${movie_end_date}&sort_by=primary_release_date.asc&with_original_language=hi`, {
+                headers: {Authorization: `Bearer ${process.env.TMDB_API_KEY}`}
+            })}
+        else{
+            const {data} = await axios.get(`https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&primary_release_date.gte={${dateBefore14days.toISOString().split('T')[0]}}&primary_release_date.lte=${dateAfter14days.toISOString().split('T')[0]}&sort_by=primary_release_date.asc&with_original_language=hi`, {
+                headers: {Authorization: `Bearer ${process.env.TMDB_API_KEY}`}
+            });
         }
+        const movies = data.results;
         res.json({success: true, movies: movies});
     } catch (error) {
         console.error(error);
