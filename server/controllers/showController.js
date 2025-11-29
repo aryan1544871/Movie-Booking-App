@@ -9,7 +9,7 @@ export const getNowPlayingMovies = async(req, res) =>{
         const now = new Date();
         const dateAfter14days = new Date(now.getTime() + 14*24*60*60*1000);
         const dateBefore14days = new Date(now.getTime() - 14*24*60*60*1000);
-        const {data} = await axios.get(`https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&primary_release_date.gte=${dateBefore14days.toISOString().split('T')[0]}&primary_release_date.lte=${dateAfter14days.toISOString().split('T')[0]}&sort_by=popularity.desc&with_original_language=hi`, {
+        const {data} = await axios.get(`https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&primary_release_date.gte=${dateBefore14days.toISOString().split('T')[0]}&primary_release_date.lte=${dateAfter14days.toISOString().split('T')[0]}&sort_by=primary_release_date.asc&with_original_language=hi`, {
             headers: {Authorization: `Bearer ${process.env.TMDB_API_KEY}`}
         });
 
