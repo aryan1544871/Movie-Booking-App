@@ -6,6 +6,9 @@ import User from "../models/User.js";
 
 export const isAdmin = async (req, res)=>{
     try {
+        if(req.isAdmin === false){
+            return res.json({success: false, isAdmin: false});
+        }
         res.json({success: true, isAdmin: true});
     } catch (error) {
          res.json({success: false, message: error.message});
