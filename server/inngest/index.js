@@ -2,6 +2,7 @@ import { Inngest } from "inngest";
 import User from '../models/User.js';
 import Booking from "../models/Booking.js";
 import Show from "../models/Show.js";
+import axios from 'axios';
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "movie-ticket-booking" });
@@ -77,5 +78,36 @@ async({event,step})=>{
   })
 }
 );
+
+// Ingest function to send email when user books a show
+const sendBookingConfirmationEmail = inngest.createFunction(
+  {id:"send-booking-confirmation-email"},
+  {event: "app/show.booked"},
+  async ({event, step})=>{
+    const {bookingId} = event.data;
+    const booking = await Booking.findById(bookingId).populate({
+      path:'show',
+      populate: {path: "movie", model: "Movie"}
+    })
+    const sendData = {
+            email: booking.user.email,
+            subject: `Payment Confirmation: "${booking.show.movie.title}" booked!`,
+            body: `Thank you`
+          };
+
+          axios.patch(`https://auth-project-swart.vercel.app/api/email/send`, sendData, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+            .then(response => {
+              console.log('Email sent:', response.data);
+             
+            })
+            .catch(error => {
+              console.error('Error sending email:', error);
+            });
+  }
+);
 // Create an empty array where we'll export future Inngest functions
-export const functions = [syncUserCreation, syncUserDeletion,updateUserCreation, releaseSeatsAndDeleteBooking];
+export const functions = [syncUserCreation, syncUserDeletion,updateUserCreation, releaseSeatsAndDeleteBooking, sendBookingConfirmationEmail];
