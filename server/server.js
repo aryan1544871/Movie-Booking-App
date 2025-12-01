@@ -21,7 +21,7 @@ app.use('api/stripe', express.raw({type:'application/json'}), stripeWebhooks)
 //Middlewares
 app.use(express.json());
 app.use(cors({
-  origin: 'https://book-my-show-nine-omega.vercel.app',
+  origin: process.env.CORS_URL,
   credentials: true,
 }));
 app.use(clerkMiddleware())
